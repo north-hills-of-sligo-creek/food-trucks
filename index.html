@@ -17,16 +17,17 @@ a{
 }
 #logoContainer{
   font-family: 'Cinzel', serif;
-  width: 410px;
+  width: 450px;
   display: inherit;
   margin: 0 auto;
   font-weight: bold;
   font-size: 27px;
   text-align: center;
   margin-bottom: 28px;
+  letter-spacing: 1px;
 }
 #fud{
-  font-size: 55px;
+  font-size: 58px;
   color: #8009c6;
   font-family: 'Josefin Sans', sans-serif;
 }
@@ -35,7 +36,7 @@ a{
 
 }
 #scheduleContainer{
-  width: 410px;
+  width: 450px;
   margin: 0 auto;
   font-size: 26px;
 }
@@ -106,6 +107,43 @@ a{
     font-size: 19px;
     margin-top: 7px;
 }
+.calContainer{
+  float: right;
+}
+.add-to-calendar-checkbox{
+      text-align: right;
+    display: block;
+    font-size: 17px;
+    margin-top: 9px;
+    /*font-weight: bold;*/
+    display: none;
+}
+.icon-google, .icon-ical, .icon-outlook{
+    display: inline-block;
+    text-align: right;
+    text-decoration: none;
+    font-size: 15px;
+    line-height: 10px;
+    float: right;
+    margin-top: 12px;
+    margin-left: 19px;
+    width: 38px;
+    font-weight: bold;
+}
+.cal-img{
+    width: 21px;
+    display: block;
+    margin-bottom: 37px;
+    /* float: right; */
+    /* clear: both; */
+    margin-top: 5px;
+    position: relative;
+    left: 1px;
+}
+.cal-img.ical{
+  left: 10px;
+}
+
 </style>
 </head>
 
@@ -120,12 +158,15 @@ a{
 <div id="scheduleContainer">
 </div>
 
-
+<script src="js/ouical.min.js"></script>
 <script src = "js/moment.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://d3js.org/d3.v6.min.js"></script>
 
 <script>
+
+
+
 
 $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT9oNlC4McMHrtqYujAxs/1/public/values?alt=json', function(allData) {
     // JSON result in `data` variable
@@ -192,7 +233,7 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
     truck.append("div")
       .attr("class", "truckDate")
       .text(function(d){
-        return d["Scheduled Date"].format("MMMM Do")
+        return d["Scheduled Date"].format("ddd, MMMM Do")
       })
 
     truck.append("div")
@@ -243,6 +284,101 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
       .style("display", function(d){
         return (d.hasOwnProperty("Preorder link")) ? "inline-block" : "none";
       })
+
+    truck.append("div")
+      .attr("class", "calContainer")
+      .attr("id", function(d,i){
+        return "calCon-" + i
+      })
+
+
+      // var L = data.length
+      for(var i = 0; i<data.length; i++){
+        var d = data[i],
+            title = d.hasOwnProperty("Restaurant drop") ? d["Food truck"] + " food truck, North Hills" : d["Food truck"] + " restaurant drop, North Hills",
+            calData = {
+              title: title,     // Event title
+              address: 'Parkside Headquarters, 9500 Brunett Avenue',
+            } 
+
+            var desc = ""
+            if(d.hasOwnProperty("Truck website")){
+              desc += "Vendor's website:\n" + d["Truck website"]
+            }
+            if(d.hasOwnProperty("Preorder link")){
+              desc += "\n\nPreorder here:\n" + d["Preorder link"]
+            }
+
+            calData.description = desc
+
+
+            if(d.hasOwnProperty("Start time")){
+              var t = d["Start time"],
+              pm = t.search("PM") != -1
+              var h;
+              if(pm){
+                h = +t.replace(" PM","").split(":")[0] + 12
+              }else{
+                h = +t.replace(" PM","").split(":")[0]
+              }
+              var m = +t.replace(" PM","").split(":")[1]
+              
+              var startDate = d["Scheduled Date"]
+              console.log(h, m)
+              startDate.hour(h)
+              startDate.minute(m)
+              calData["start"] = startDate.toDate()
+            }else{
+              var startDate = d["Scheduled Date"]
+              startDate.hour(5+12)
+              startDate.minute(0)
+              calData["start"] = startDate.toDate()
+            }
+
+
+            if(d.hasOwnProperty("End time")){
+              var t = d["End time"],
+              pm = t.search("PM") != -1
+              var h;
+              if(pm){
+                h = +t.replace(" PM","").split(":")[0] + 12
+              }else{
+                h = +t.replace(" PM","").split(":")[0]
+              }
+              var m = +t.replace(" PM","").split(":")[1]
+              
+              var endDate = d["Scheduled Date"]
+              endDate.hour(h)
+              endDate.minute(m)
+              calData["end"] = endDate.toDate()
+            }else{
+              var endDate = d["Scheduled Date"]
+              endDate.hour(5+12+2)
+              endDate.minute(0)
+              calData["end"] = endDate.toDate()
+            }
+
+
+            // calData
+
+            //               start: new Date('June 15, 2013 19:00'),   // Event start date
+            //   end: new Date('June 15, 2013 23:00'),     // You can also choose to set an end time.
+
+            
+console.log(calData)
+
+        var myCalendar = createCalendar({
+          options: {
+            class: 'cal',
+            id: 'cal-' + i                               
+          },
+          data: calData
+        })
+        document.querySelector('#calCon-' + i).appendChild(myCalendar);
+
+      }
+
+
 
 });
 
