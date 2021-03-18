@@ -4,6 +4,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"> 
 
 
 
@@ -142,6 +145,43 @@ a{
 }
 .cal-img.ical{
   left: 10px;
+}
+
+@media(max-width: 480px){
+  .truckName{
+    width: 100%;
+  }
+  .truckDate, .time, .calContainer{
+    float: left;
+    clear: both;
+  }
+  .preorder{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+  .rowContainer{
+    position: relative;
+    width: 100%;
+  }
+  #scheduleContainer, #logoContainer{
+    width: 100%;
+  }
+  #logoContainer{
+    font-size: 20px;
+  }
+  #fud{
+    font-size: 45px;
+  }
+  .truckType{
+    display: none;
+  }
+  .time{
+    margin-left: 4px;
+  }
+  .calContainer{
+    margin-left: -15px;
+  }
 }
 
 </style>
@@ -301,15 +341,19 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
               address: 'Parkside Headquarters, 9500 Brunett Avenue',
             } 
 
-            var desc = ""
+            var desc = "",
+                icsDesc = ""
             if(d.hasOwnProperty("Truck website")){
               desc += "Vendor's website:\n" + d["Truck website"]
+              icsDesc += "Vendor's website:\\n" + d["Truck website"]
             }
             if(d.hasOwnProperty("Preorder link")){
               desc += "\n\nPreorder here:\n" + d["Preorder link"]
+              icsDesc += "\\n\\nPreorder here:\\n" + d["Preorder link"]
             }
 
             calData.description = desc
+            calData.icsDescription = icsDesc
 
 
             if(d.hasOwnProperty("Start time")){
