@@ -112,6 +112,7 @@ a{
 }
 .calContainer{
   float: right;
+  position: relative;
 }
 .add-to-calendar-checkbox{
       text-align: right;
@@ -146,7 +147,15 @@ a{
 .cal-img.ical{
   left: 10px;
 }
-
+.truckNote{
+  display: inline-block;
+  clear: left;
+  float: left;
+  font-size: 18px;
+  width: 270px;
+  font-style: italic;
+  margin-top: -13px;
+}
 @media(max-width: 480px){
   .truckName{
     width: 100%;
@@ -326,9 +335,29 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
       })
 
     truck.append("div")
+      .attr("class", "truckNote")
+      .html(function(d){
+        return (d.hasOwnProperty("Note")) ? d.Note : ""
+      })
+      .style("display", function(d){
+        return (d.hasOwnProperty("Note")) ? 'block' : "none"
+      })
+
+    truck.append("div")
       .attr("class", "calContainer")
       .attr("id", function(d,i){
         return "calCon-" + i
+      })
+      .style("top", function(d){
+        if(d.hasOwnProperty("Note")){
+          if(d.hasOwnProperty("Start time")){
+            return "-39px"
+          }else{
+            return "-64px"
+          }
+        }else{
+          return "0px"
+        }
       })
 
 
@@ -351,6 +380,11 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
               desc += "\n\nPreorder here:\n" + d["Preorder link"]
               icsDesc += "\\n\\nPreorder here:\\n" + d["Preorder link"]
             }
+            if(d.hasOwnProperty("Note")){
+              desc += "\n\nNote:\n" + d["Note"]
+              icsDesc += "\\n\\nNote:\\n" + d["Note"]
+            }
+
 
             calData.description = desc
             calData.icsDescription = icsDesc
