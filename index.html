@@ -46,6 +46,8 @@ a{
 .rowContainer{
   margin-bottom: 30px;
   font-weight: 300;
+  position: relative;
+  height: 132px;
 }
 .truckDate{
   display: inline-block;
@@ -111,8 +113,8 @@ a{
     margin-top: 7px;
 }
 .calContainer{
-  float: right;
-  position: relative;
+  position: absolute;
+  right: 11px;
 }
 .add-to-calendar-checkbox{
       text-align: right;
@@ -349,15 +351,11 @@ $.getJSON('https://spreadsheets.google.com/feeds/cells/1S5j1C5JdsWDolhoYdSMBJeXT
         return "calCon-" + i
       })
       .style("top", function(d){
-        if(d.hasOwnProperty("Note")){
           if(d.hasOwnProperty("Start time")){
-            return "-39px"
+            return "52px"
           }else{
-            return "-64px"
+            return "25px"
           }
-        }else{
-          return "0px"
-        }
       })
 
 
