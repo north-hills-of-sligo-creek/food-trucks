@@ -240,7 +240,7 @@ function buildSite(allData) {
     data = allData
       .filter(function(d){ return d["Scheduled Date"] != ""})
       .map(function(d){ d["Scheduled Date"] = moment(d["Scheduled Date"]); return d})
-      .filter(function(d){ return d["Scheduled Date"].isAfter(moment())})
+      .filter(function(d){ return d["Scheduled Date"].isAfter(moment().subtract(1,"day"))})
       .sort(function(a,b){
         return a["Scheduled Date"].format('YYYYMMDD') - b["Scheduled Date"].format('YYYYMMDD')
       })
